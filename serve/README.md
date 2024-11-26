@@ -1,6 +1,7 @@
 # Service simplifié
 
-En fait renvoie les fichiers page ou XML (.xml) mis statiquement dans des sous-répertoires.
+En fait renvoie les fichiers page ou XML (.xml) mis statiquement dans des sous-répertoires.<br/>
+Nécessite PHP dans une version pas trop obsolète et être actif.<br/>
 
 Le fichier 404.php intercepte les erreurs, pour fournir des informations pratiques.<br/>
 Si l'extension demandée est .xml, renvoie un XML correctement formé pour MiniPavi, indiquant l'erreur.<br/>
@@ -10,6 +11,12 @@ Sinon, renvoie un flux vidéotex effaçant l'écran et contenant le message d'er
 [Serveur direct](https://xs.pvigier.com/exemple/xml.xml)</br>
 [Serveur via MiniPavi](https://www.minipavi.fr/emulminitel/index.php?url=https://xs.pvigier.com/exemple/xml.xml)<br/>
 [Service publique](https://xmlint-sandbox.pvigier.com/)<br/>
+
+
+## Configuration 404.php pour Apache
+Dans votre fichier de configuration dans `/etc/apache2/sites-available/` :<br/>
+`   ErrorDocument 404 /404.php`
+
 
 ## Tests
 Le sous-répertoire exemple permet de tester:<br/>
