@@ -44,7 +44,7 @@ if ($extension === 'xml') {
             <ecrit texte="https://xmlint-sandbox.pvigier.com/" />
 
             <position ligne="8" col="1" />
-            <ecrit texte="Repos Git:" />
+            <ecrit texte="Repo Git:" />
             <position ligne="9" col="1" />
             <ecrit texte="https://github.com/iAPX/xmlint-sandbox" />
         </ecran>
