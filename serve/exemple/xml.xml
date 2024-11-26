@@ -1,0 +1,33 @@
+<service>
+    <interpreteur url="http://www.minipavi.fr/XMLint/?xurl=" /><debut nom="accueil" />
+    <page nom="accueil">
+        <ecran>
+            <efface />
+            <affiche url="https://xs.pvigier.com/exemple/accueil.vdt" />
+            <couleur texte="rouge"/>
+            <ecrit texte="1 + ENVOI pour la page d'erreur" />
+        </ecran>
+        <entree>
+            <zonesaisie ligne="24" col="40" longueur="1" curseur="visible" />
+            <validation touche="envoi" />
+            <validation touche="repetition" />
+        </entree>
+        <action defaut="Choix non proposé!">
+            <saisie choix="1" touche="envoi" suivant="erreur" />
+            <saisie touche="repetition" suivant="accueil" />
+        </action>
+    </page>
+    <page nom="erreur">
+        <ecran>
+            <efface />
+            <affiche url="https://xs.pvigier.com/exemple/erreur.vdt" />
+        </ecran>
+        <entree>
+            <zonesaisie ligne="24" col="40" longueur="1" curseur="visible" />
+            <validation touche="repetition" />
+        </entree>
+        <action defaut="Choix non proposé!">
+            <saisie touche="repetition" suivant="erreur" />
+        </action>
+    </page>
+</service>
