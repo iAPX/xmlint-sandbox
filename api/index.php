@@ -58,7 +58,7 @@ function checkToken(string $token): void
     if (strtolower($new_token) !== strtolower($token)) {
         http_response_code(403);
         echo json_encode([
-            'error' => 'Invalid token : ' . $token . ". expected : " . $new_token,
+            'error' => 'Invalid token : ' . $token,
         ]);
         exit(0);
     }
