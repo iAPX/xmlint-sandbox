@@ -3,7 +3,7 @@
     <page nom="accueil">
         <ecran>
             <efface />
-            <affiche url="https://xs.pvigier.com/exemple/accueil.vdt" />
+            <affiche url="accueil.vdt" />
             <couleur texte="rouge"/>
             <ecrit texte="1 + ENVOI pour la page d'erreur" />
         </ecran>
@@ -20,7 +20,7 @@
     <page nom="erreur">
         <ecran>
             <efface />
-            <affiche url="https://xs.pvigier.com/exemple/erreur.vdt" />
+            <affiche url="erreur.vdt" />
         </ecran>
         <entree>
             <zonesaisie ligne="24" col="40" longueur="1" curseur="visible" />

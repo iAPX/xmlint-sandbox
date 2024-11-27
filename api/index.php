@@ -5,78 +5,45 @@
  * 
  * Checks the Token, then act
  * 
- * - GET /{directory}/
- * - DELETE /{directory}/{filename}
- * - POST or PUT /{directory}/{filename}
+ * - POST &op=LIST
+ * - POST &op=DELETE&filename={filename}
+ * - POST &op=UPLOAD&filename={filename}
+ *   "upfile" = content
  */
 
 // Gets the environment datas
 define('XMLINT_SANDBOX_DIR', getenv('XMLINT_SANDBOX_DIR'));
 define('XMLINT_SANDBOX_SEED', getenv('XMLINT_SANDBOX_SEED'));
 
+const SERVE_URL = "https://xs.pvigier.com";
+const MAX_FILES = 100;
+const MAX_XML_LENGTH = 60000;
+const MAX_PAGE_LENGTH = 4096;
+const REAL_MAX_XML_LENGTH = 65500;
 
-// Get the HTTP method and requested path
-if (!empty($_SERVER['REDIRECT_REQUEST_METHOD'])) {
-    $method = $_SERVER['REDIRECT_REQUEST_METHOD'];
-} else {
-    $method = $_SERVER['REQUEST_METHOD'];
+$token = getallheaders()['xmlint-sandbox-token'] ?? '';
+
+// @TODO unsafe, but should be ok for now
+$dirname = str_replace(['/', '\\', '..'], '', substr($token, 0, 8));
+if (!file_exists(XMLINT_SANDBOX_DIR . '/' . $dirname) || !is_dir(XMLINT_SANDBOX_DIR . '/' . $dirname)) {
+    http_response_code(404);
+    echo json_encode([
+        'error' => 'Directory "' . $dirname . '" not present.',
+    ]);
+    exit(0);
 }
 
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$op = $_POST['op'] ?? '';
+$filename = $_POST['filename'] ?? '';
+$basename = pathinfo($filename, PATHINFO_FILENAME);
+$extension = pathinfo($filename, PATHINFO_EXTENSION);
 
-$requestUri = $_SERVER['REQUEST_URI'];
-
-// Parse the URI to extract the file path and name
-$pathInfo = pathinfo($requestUri);
-
-// Extract parts of the path
-$dirname = trim($pathInfo['dirname'], '/'); // Subdirectories (without leading or trailing slashes)
-if ($dirname === '') {
-    // No file, just a dir.
-    $dirname = trim($pathInfo['basename'], '/');
-    $basename = '';
-    $extension = '';
-} else {
-    // Dir and file
-    $dirname = trim($pathInfo['dirname'], '/'); // Subdirectories (without leading or trailing slashes)
-    $basename = $pathInfo['filename'] ?? '';          // Full file name (e.g., 'file.html')
-    $extension = $pathInfo['extension'] ?? '';  // File extension (e.g., 'html')
-}
-
-function checkDirectoryPermission(string $directory): void 
-{
-    $headers = apache_request_headers();
-    $token = $headers['xmlint-sandbox-token'] ?? '';
-
-    // @TODO check Token integrity
-
-    // Does directory correspond to token
-    if (substr($token, 0, 8) !== $directory) {
-        http_response_code(403);
-        echo json_encode([
-            'error' => 'Token "' . $token . '" or Directory "' . $directory . '" incorrect.',
-        ]);
-        exit(0);
-    }
-
-    // Is directory existant
-    $dir = XMLINT_SANDBOX_DIR . '/' . $directory;
-    if (!file_exists($dir) || !is_dir($dir)) {
-        http_response_code(404);
-        echo json_encode([
-            'error' => 'Directory "' . $directory . '" not present.',
-        ]);
-        exit(0);
-    }
-    return;
-}
 
 function checkSyncVersion(): void 
 {
     $headers = getallheaders();
-    // var_dump($headers);
-    $version = $headers['xmlint-sandbox-sync-version'] ?? '0';
-    if (version_compare($version, '0.1', '<')) {
+    $version = $headers['xmlint-sandbox-sync-version'] ?? '';
+    if (version_compare($version, '0.2', '<')) {
         http_response_code(400);
         echo json_encode([
             'error' => 'Incorrect Sync version, 0.1 or higher expected, "' . $version . '" received.',
@@ -85,14 +52,34 @@ function checkSyncVersion(): void
     }
 }
 
+function checkToken(string $token): void 
+{
+    $new_token = substr(strtolower($token), 0, 32) . substr(hash('sha256', XMLINT_SANDBOX_SEED . substr(strtolower($token), 0, 32)), 0, 32);
+    if (strtolower($new_token) !== strtolower($token)) {
+        http_response_code(403);
+        echo json_encode([
+            'error' => 'Invalid token : ' . $token . ". expected : " . $new_token,
+        ]);
+        exit(0);
+    }
+}
+
 function checkBasenameAndExtension(string $basename, string $extension): void 
 {
+    if (empty($basename)) {
+        http_response_code(400);
+        echo json_encode([
+            'error' => 'Filename missing',
+        ]);
+        exit(0);
+    }
+
     // Checks extension first
     $allowed_extensions = ['vdt', 'vdx', 'videotex', 'pag', 'page', 'minitel', 'xml'];
     if (!in_array(strtolower($extension), $allowed_extensions)) {
         http_response_code(400);
         echo json_encode([
-            'error' => 'Filename extension not allowed : ' . $extension,
+            'error' => 'Filename extension not allowed : .' . $extension . ', allowed extensions are : .' . implode(', .', $allowed_extensions),
         ]);
         exit(0);
     }
@@ -108,8 +95,25 @@ function checkBasenameAndExtension(string $basename, string $extension): void
     }
 }
 
-function checkUploadedFileSize(string $extension): void
+function checkUploadedFile(string $extension): void
 {
+    if (!isset($_FILES['upfile'])) {
+        http_response_code(400);
+        echo json_encode([
+            'error' => 'No "upfile" uploaded file found',
+            'FILES' => print_r($_FILES, true),
+            'SERVER' => print_r($_SERVER, true),
+        ]);
+        exit(0);
+    }
+    if($_FILES['upfile']['error'] !== UPLOAD_ERR_OK) {
+        http_response_code(400);
+        echo json_encode([
+            'error' => 'Upload error : ' . $_FILES['upfile']['error'],
+        ]);
+        exit(0);
+    }
+
     // Empty file?
     if ($_FILES['upfile']['size'] === 0) {
         http_response_code(400);
@@ -118,21 +122,52 @@ function checkUploadedFileSize(string $extension): void
         ]);
         exit(0);
     }
-    // too heavy for XML?
-    if (strtolower($extension) === 'xml' && $_FILES['upfile']['size'] > 60000) {
+
+    // too heavy for XML? With a 4KB margin to enable page URL transposition!
+    if (strtolower($extension) === 'xml' && $_FILES['upfile']['size'] > REAL_MAX_XML_LENGTH) {
         http_response_code(400);
         echo json_encode([
-            'error' => 'XML files are limited to 60KB (60,000 bytes). This file is too big : ' . $_FILES['upfile']['size'],
+            'error' => 'XML files are limited to ' . MAX_XML_LENGTH . ' bytes. This file is too big : ' . $_FILES['upfile']['size'],
         ]);
         exit(0);
     }
-    // Too heavy
-    if (strtolower($extension) !== 'xml' && $_FILES['upfile']['size'] > 4096) {
+
+    // Too heavy for Pages
+    if (strtolower($extension) !== 'xml' && $_FILES['upfile']['size'] > MAX_PAGE_LENGTH) {
         http_response_code(400);
         echo json_encode([
-            'error' => 'Page (non-xml) files are limited to 4KiB (4,096 bytes). This file is too big : ' . $_FILES['upfile']['size'],
+            'error' => 'Page (non-xml) files are limited to ' . MAX_PAGE_LENGTH . ' bytes. This file is too big : ' . $_FILES['upfile']['size'],
         ]);
         exit(0);
+    }
+
+    // Begins with <? or #! ??? Security problem!
+    $content = file_get_contents($_FILES['upfile']['tmp_name']);
+    if ($content === false) {
+        http_response_code(400);
+        echo json_encode([
+            'error' => 'Could not check the uploaded file?!?',
+        ]);
+        exit(0);
+    }
+    if (substr($content, 0, 5) !== '<?xml' && in_array(substr($content, 0, 2), ['<?', '#!'])) {
+        http_response_code(400);
+        echo json_encode([
+            'error' => 'File starts with "<?" or "#!"',
+        ]);
+        exit(0);
+    }
+
+    // Correct XML file?
+    if (strtolower($extension) === 'xml') {
+        $xml = simplexml_load_string($content);
+        if ($xml === false) {
+            http_response_code(400);
+            echo json_encode([
+                'error' => 'Invalid XML file',
+            ]);
+            exit(0);
+        }
     }
 }
 
@@ -147,16 +182,21 @@ function getFilesAndTimeStamp(string $directory): array
 }
 
 checkSyncVersion();
-checkDirectoryPermission($dirname);
-switch ($method) {
-    case 'GET':
-        // GET file list
-        $directory = XMLINT_SANDBOX_DIR . '/' . $dirname. '/';
+checkToken($token);
+switch ($op) {
+    case 'LIST':
+        // LIST remote files
         http_response_code(200);
-        echo json_encode(['files' => getFilesAndTimeStamp($directory)]);
+        echo json_encode([
+            'files' => getFilesAndTimeStamp(XMLINT_SANDBOX_DIR . '/' . $dirname. '/'),
+            'SERVE_URL' => SERVE_URL,
+            'MAX_FILES' => MAX_FILES,
+            'MAX_XML_LENGTH' => MAX_XML_LENGTH,
+            'MAX_PAGE_LENGTH' => MAX_PAGE_LENGTH
+        ]);
         exit(0);
     case 'DELETE':
-        // DELETE file
+        // DELETE remote file
         checkBasenameAndExtension($basename, $extension);
         $filename = XMLINT_SANDBOX_DIR . '/' . $dirname . '/' . $basename . "." . $extension;
         if (!file_exists($filename)) {
@@ -165,21 +205,37 @@ switch ($method) {
         } else {
             unlink($filename);
             http_response_code(200);
+            echo json_encode(['ok' => 'File deleted : ' . $basename . '.' . $extension]);
         }
         exit(0);
-    case 'POST':
-    case 'PUT':
-        // Create or replace file
+    case 'UPLOAD':
+        // UPLOAD file
         checkBasenameAndExtension($basename, $extension);
-        checkUploadedFileSize($extension);
+        checkUploadedFile($extension);
         $filename = XMLINT_SANDBOX_DIR . '/' . $dirname . '/' . $basename . "." . $extension;
         if (file_exists($filename)) {
+            // Delete before adding it again
             unlink($filename);
+        } else {
+            // Check Max files
+            $file_count = count(glob(XMLINT_SANDBOX_DIR . '/' . $dirname . '/*'));
+            if ($file_count >= MAX_FILES) {
+                http_response_code(400);
+                echo json_encode([
+                    'error' => 'Too many files, limit is ' . MAX_FILES . '.',
+                ]);
+                exit(0);
+            }
         }
         move_uploaded_file($_FILES['upfile']['tmp_name'], $filename);
-
-        // @TODO change the XML page pointers
-
+        chmod($filename, 0600);  // Only owner can read & write, none execution
         http_response_code(200);
+        echo json_encode(['ok' => 'File uploaded : ' . $basename . '.' . $extension]);
+        exit(0);
+    default:
+        http_response_code(400);
+        echo json_encode([
+            'error' => 'Unknown operation : ' . $op,
+        ]);
         exit(0);
 }
