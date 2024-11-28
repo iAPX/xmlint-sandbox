@@ -1,17 +1,14 @@
 # xmlint-sandbox
 XMLint-sandbox vous permet de tester vos services Minitel XMLint sans avoir de serveur, d'hébergement ans modifier les réglages de votre routeur, ou si vous n'y avez pas accès.
 
-En bref, il règle un seul problème: comment développer un service Minitel pour XMLint le plus facilement possible.
+En bref, il règle un seul problème: comment tester un service Minitel pour XMLint le plus facilement possible.<br/>
+Il ne règle pas tous les problèmes liés au développement, mais il aide à démarrer en quelques minutes!
 
 
 ## Comment faire votre service
-- Connectez-vous à l'interface utilisateur [https://xmlint-sandbox.pvigier.com](https://xmlint-sandbox.php)
+- Connectez-vous à l'interface utilisateur [https://xmlint-sandbox.pvigier.com](https://xmlint-sandbox.pvigier.com)
 - Activez votre sandbox, en cliquant sur le bouton "Activer"
-- Téléchargez le script PHP depuis votre sandbox, si ça n'est déjà fait
-- Créez un fichier XML, comme [celui-ci](./serve/exemple/xml.xml)
-- Créez une ou des pages Vidéotex, telle [celle-ci](./serve/exemple/accueil.vdt)
-- Lancez le script PHP, donnez-lui le Token affiché dans la page.
-- Cliquez sur le lien "Voir mon service Minitel" sur la page Web pour afficher celui-ci!
+- Utilisez l'interface, et faites-vous plaisir!
 
 - Rince and repeat!
 - Modifiez, ajoutez, effacez, relancez la synchronisation, réessayez!
@@ -24,8 +21,7 @@ Pour créer ou modifier une page Vidéotex, [utilisez MiEdit](https://minitel.cq
 
 ## Limites & contraintes
 - Votre service Minitel ne peut avoir de sous-répertoire, le XML et les pages doivent être au même niveau.
-- Votre fichier XML doit avoir l'extension .xml
-- Un seul fichier XML est permis
+- Votre fichier XML doit avoir l'extension .xml (!!!)
 - Un fichier XML non-valide ne sera pas accepté, pas plus qu'un fichier XML de plus de 64 Ko
 - Les pages seront toutes servies depuis votre répertoire temporaire, quelque-soit l'URL que vous avez assigné à chacune (simplification)
 - Votre XML sera modifié avant d'être stocké coté serveur, pour faire pointer chaque page sur votre répertoire du serveur.
@@ -44,14 +40,14 @@ C'est agréable d'avoir un message d'erreur explicite!
 
 
 ## Synchronisation des fichiers : /sync
-[ ] Premier prototype
+[X] Premier prototype
 [ ] Version exploitable
 Script PHP qui synchronise vos fichiers avec votre répertoire temporaire, et qui aussi indiquera les erreurs dans le XML téléversé sir votre XML n'est pas correct.<br/>
 Consultez [la documentation du synchronisateur de fichiers](./sync/README.md)
 
 
 ## Rest API : /api
-[ ] Premier prototype
+[X] Premier prototype
 [ ] Version exploitable
 Consultez [la documentation de l'API REST](./api/README.md)<br/>
 Sert à la synchronisation de fichier, ainsi qu'à l'interface du service xmlint-sandbox, pour la rendre plus dynamique.

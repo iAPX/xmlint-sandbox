@@ -54,7 +54,7 @@ function checkSyncVersion(): void
 
 function checkToken(string $token): void 
 {
-    $new_token = substr(strtolower($token), 0, 32) . substr(hash('sha256', XMLINT_SANDBOX_SEED . substr(strtolower($token), 0, 32)), 0, 32);
+    $new_token = substr(strtolower($token), 0, 16) . substr(hash('sha256', XMLINT_SANDBOX_SEED . substr(strtolower($token), 0, 16)), 0, 16);
     if (strtolower($new_token) !== strtolower($token)) {
         http_response_code(403);
         echo json_encode([
