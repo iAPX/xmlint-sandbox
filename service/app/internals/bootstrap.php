@@ -42,35 +42,52 @@ if (!file_exists($full_dir)) {
     mkdir($full_dir);
 
     $page_url = getenv('XMLINT_SERVE_URL') . $working_dir . '/demo.vdt';
+    $xml_encoded_url = "https://www.minipavi.fr/emulminitel/index.php?url=" . urlencode(getenv('XMLINT_SERVE_URL') . $working_dir . '/demo.xml');
 
     // Create default xml & Videotex
     $xml = <<<XML
 <service>
-    <interpreteur url="http://www.minipavi.fr/XMLint/?xurl=" /><debut nom="accueil" />
+    <!-- consultez la documentation PDF : https://raw.githubusercontent.com/ludosevilla/minipaviCli/master/XMLint/XMLint-doc.pdf  -->
+    <!-- Votre service Minitel est visible ici : $xml_encoded_url -->
+    <interpreteur url="http://www.minipavi.fr/XMLint/?xurl=" />
+
+    <!-- indique le nom de la première page affichée de votre service -->
+    <debut nom="accueil" />
+
+    <!-- Une seule page, rajoutez-en avec des "nom" différents ! -->
     <page nom="accueil">
         <ecran>
+            <!-- Ici modifiez l'affichage de votre page ! -->
+
+            <!-- Vous pouvez créer et éditer des fichiers Vidéotex avec : https://minitel.cquest.org/ -->
             <affiche url="$page_url" />
 
-            <position ligne="12" col="1" />
+            <!-- Vous pouvez aussi afficher directement depuis le XML ! -->
+            <position ligne="8" col="1" />
             <ecrit texte="Fichier XML : demo.xml" />
-            <position ligne="13" col="1" />
+            <position ligne="10" col="1" />
             <ecrit texte="Dir : $working_dir" />
-            <position ligne="14" col="1" />
-            <ecrit texte="Repo GIT:" />
-            <position ligne="15" col="1" />
-            <ecrit texte="https://github.com/iAPX/xmlint-sandbox" />
+
         </ecran>
         <entree>
+            <!-- Indiquez une Zone de Saisie -->
             <zonesaisie ligne="24" col="40" longueur="1" curseur="visible" />
+
+            <!-- Indiquez quelles touches de fonction du Minitel vous voulez gérer -->
             <validation touche="repetition" />
         </entree>
         <action defaut="Choix non proposé!">
+            <!-- Ici ajoutez les différentes actions en fonction de la réponse utilisateur -->
             <saisie touche="repetition" suivant="accueil" />
         </action>
     </page>
 </service>
 XML;
 
+    $page = "\x0C\x1F\x42\x41\x1B\x54  \x18\x1B\x4F  XMLint Sandbox";
+    $page .= "\x1F\x43\x41   Votre service Minitel en 1 minute!";
+    $page .= "\x1F\x46\x41Fichier Videotex : demo.vdt";
+
     file_put_contents($full_dir . '/demo.xml', $xml);
-    file_put_contents($full_dir . '/demo.vdt', chr(12) . "Page de demo XMLint Sandbox.\r\nFichier Page : demo.vdt");
+    file_put_contents($full_dir . '/demo.vdt', $page);
 }

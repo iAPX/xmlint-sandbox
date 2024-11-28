@@ -103,7 +103,7 @@ require_once 'internals/get_files.php';
             <div id="zip-download">
             <p>
                 <form action="/app/zip.php" method="post">
-                    <input type="submit" name="zip" value="Téléchargez votre projet en .ZIP" />
+                    <input type="submit" name="zip" value="Sauvez votre projet en .ZIP" />
                 </form>
             </p>
         </div>

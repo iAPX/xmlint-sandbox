@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['upfile'])) {
 
 $filename = $_FILES['upfile']['name'];
 
-function processUploadedFile(string $filename, string $full_dir, array $working_dir_files)
+function processUploadedFile(string $filename, string $working_dir, string $full_dir, array $working_dir_files)
 {
     $extension = pathinfo($filename, PATHINFO_EXTENSION);
     $basename = pathinfo($filename, PATHINFO_FILENAME);
@@ -84,6 +84,22 @@ function processUploadedFile(string $filename, string $full_dir, array $working_
     if (!move_uploaded_file($_FILES['upfile']['tmp_name'], $full_filename)) {
         return "Problème lors du déplacement du fichier!?!";
     } else {
+        // Xml transcrit!
+        if (strtolower($extension) === 'xml') {
+            $xml = simplexml_load_file($full_filename);
+            foreach ($xml->xpath('//affiche[@url]') as $page) {
+
+                $currentUrl = (string)$page['url'];
+                $basename = pathinfo($currentUrl, PATHINFO_BASENAME);
+                // @TODO refaire
+                $page['url'] = "https://xs.pvigier.com/" . $working_dir . '/' . $basename;
+            }
+        
+            // Output the modified XML as a string
+            $modifiedXmlString = $xml->asXML();
+            file_put_contents($full_filename, $modifiedXmlString);
+        }
+
         // RW permissions uniquement pour le Web.
         chmod($full_filename, 0600);
     }
@@ -95,7 +111,7 @@ function processUploadedFile(string $filename, string $full_dir, array $working_
 if (!checkFilename($filename)) {
     $message = "Nom de fichier '" . htmlspecialchars($filename) . "' incorrect.";
 } else {
-    $message = processUploadedFile($filename, $full_dir, $working_dir_files);
+    $message = processUploadedFile($filename, $working_dir, $full_dir, $working_dir_files);
     if ($message === true) {
         $message = "Fichier '" . htmlspecialchars($filename) . "' téléversé.";
     }
