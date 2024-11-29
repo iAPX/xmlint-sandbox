@@ -50,6 +50,11 @@ require_once 'internals/get_files.php';
                             <input type="hidden" name="filename" value="<?= $filename ?>" />
                             <input type="submit" name="delete" value="Effacer <?= $filename ?>" />
                         </form>
+                        <?php if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) !== 'xml'): ?>
+                            <a href="https://www.minipavi.fr/emulminitel/index.php?url=<?= urlencode(getenv('XMLINT_SERVE_URL') . $working_dir . '/' . $filename . '.visu') ?>" target="_blank">
+                                Afficher la page
+                            </a>
+                        <?php endif; ?>
                     </p>
                 <?php endforeach; ?>
             </div>

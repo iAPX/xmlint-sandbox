@@ -58,6 +58,28 @@ if ($extension === 'xml') {
     </page>
 </service>
 XML;
+} elseif ($extension === 'visu') {
+    // Affiche la page concernée appelée {pagename}.{extension}.visu
+    header('Content-Type: application/xml; charset=utf-8');
+    $output = <<<XML
+<service>
+    <interpreteur url="http://www.minipavi.fr/XMLint/?xurl=" />
+    <debut nom="visu" />
+    <page nom="visu">
+        <ecran>
+            <efface />
+            <affiche url="https://xs.pvigier.com/$dirname/$filename" />
+        </ecran>
+        <entree>
+            <zonesaisie ligne="24" col="40" longueur="1" curseur="visible" />
+            <validation touche="repetition" />
+        </entree>
+        <action defaut="Choix non proposé!">
+            <saisie touche="repetition" suivant="erreur" />
+        </action>
+    </page>
+</service>
+XML;
 } else {
     $output = chr(12) . "\x1B\x41" . $error;
 }
