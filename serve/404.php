@@ -58,6 +58,17 @@ if ($extension === 'xml') {
     </page>
 </service>
 XML;
+} elseif ($extension === 'png') {
+    // Vignette manquante, pour du vidéotex.
+    $png_filename = "./vdt.png";
+    header("Content-Type: image/png");
+    header("Content-Length: " . filesize($png_filename));
+    header('Expires: 0');
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+
+    readfile($png_filename);
+    exit(0);
 } elseif ($extension === 'visu') {
     // Affiche la page concernée appelée {pagename}.{extension}.visu
     header('Content-Type: application/xml; charset=utf-8');
@@ -68,6 +79,9 @@ XML;
     <page nom="visu">
         <ecran>
             <efface />
+            <position ligne="0" col="1" />
+            <ecrit texte="Fichier : $filename                      " />
+            <position ligne="1" col="1" />
             <affiche url="https://xs.pvigier.com/$dirname/$filename" />
         </ecran>
         <entree>

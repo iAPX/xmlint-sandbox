@@ -45,7 +45,12 @@ require_once 'internals/get_files.php';
             <div id="file-list">
                 <?php foreach($working_dir_files as $filename => $filesize): ?>
                     <p>
-                        <?= $filename . ' (' . $filesize . ' bytes)' ?>
+                        <?php if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'xml'): ?>
+                            <?= $filename . ' (' . $filesize . ' octets)' ?>
+                        <?php else: ?>
+                            <?= $filename . ' (' . $filesize . ' octets / ' . round($filesize / 120.0, 1) . ' secondes)' ?>
+                        <?php endif; ?>
+
                         <form action="/app/delete.php" method="post">
                             <input type="hidden" name="filename" value="<?= $filename ?>" />
                             <input type="submit" name="delete" value="Effacer <?= $filename ?>" />
