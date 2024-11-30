@@ -14,6 +14,12 @@ if (!checkFilename($filename)) {
     $message = "Nom de fichier '" . htmlspecialchars($filename) . "' incorrect.";
 } elseif (file_exists($full_filename) && !is_dir($full_filename)) {
     unlink($full_filename);
+
+    $thumb_filename = $full_dir . '/.' . $filename . '.png';
+    if (file_exists($thumb_filename)) {
+        unlink($thumb_filename);
+    }
+
     $message = "Fichier détruit.";
 } else {
     $message = "Le fichier '" . htmlspecialchars($filename) . "' n'existe pas.";

@@ -16,6 +16,27 @@ $test_token = "";
 
 require_once 'internals/bootstrap.php';
 require_once 'internals/get_files.php';
+require_once 'internals/thumb.php';
+
+// Generate Thumbnails when needed
+foreach ($working_dir_files as $filename => $filesize) {
+    $png_filename = $full_dir . '/.' . $filename . '.png';
+    if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'xml' || file_exists($png_filename)) {
+        continue;
+    }
+
+    // Read the Videotex file as a string, then create and store the image, protect execution by a try/catch
+    try {
+        $videotex = file_get_contents($full_dir . '/' . $filename);
+        $image = thumb($videotex);
+        imagepng($image, $png_filename);
+        imagedestroy($image);
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        exit(0);
+        continue;
+    }
+}
 
 ?>
 <html>
@@ -46,8 +67,10 @@ require_once 'internals/get_files.php';
                 <?php foreach($working_dir_files as $filename => $filesize): ?>
                     <p>
                         <?php if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'xml'): ?>
+                            <img src="https://xs.pvigier.com/xml.png" width="160" height="125" />
                             <?= $filename . ' (' . $filesize . ' octets)' ?>
                         <?php else: ?>
+                            <img src="https://xs.pvigier.com/<?= $working_dir ?>/.<?= $filename ?>.png" width="160" height="125" />
                             <?= $filename . ' (' . $filesize . ' octets / ' . round($filesize / 120.0, 1) . ' secondes)' ?>
                         <?php endif; ?>
 
