@@ -27,8 +27,8 @@ if (!isset($_SESSION['token'])) {
     $_SESSION['token'] = $token;
     $_SESSION['timestamp'] = time();
 } else  {
-    if (!isset($_SESSION['timestamp']) || $_SESSION['timestamp'] + 86400 < time()) {
-        // Regenerate session with new timestamp. One per 24h
+    if (!isset($_SESSION['timestamp']) || $_SESSION['timestamp'] + 180 * 86400 < time()) {
+        // Regenerate session with new timestamp. One per h6 months
         $_SESSION['timestamp'] = time();
         session_regenerate_id(true);
     }

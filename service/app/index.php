@@ -51,7 +51,7 @@ foreach ($working_dir_files as $filename => $filesize) {
             <div id="token-summary">
                 <p>
                     Token : <?= $token ?><br/>
-                    Ça ne vous sert à rien pour le moment, ça viendra plus tard!
+                    Ça peut vous permettre de retourner sur ce projet en cas de changement de navigateur ou d'appareil.
                 </p>
             </div>        
         </div>
