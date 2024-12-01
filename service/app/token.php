@@ -12,6 +12,9 @@ if ($token !== $_POST['token']) {
     echo "Invalid token";
     exit(0);
 }
+
+ini_set('session.cookie_lifetime', 60 * 60 * 24 * 365);
+ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 365);
 session_start();
 $_SESSION['token'] = $_POST['token'];
 

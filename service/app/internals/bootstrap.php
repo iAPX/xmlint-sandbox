@@ -12,7 +12,8 @@ const MAX_XML_LENGTH = 60000;
 const MAX_PAGE_LENGTH = 4096;
 const MAX_FILES = 100;
 
-session_set_cookie_params(86400 * 365);
+ini_set('session.cookie_lifetime', 60 * 60 * 24 * 365);
+ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 365);
 session_start();
 
 // Token generation and storage
@@ -25,13 +26,7 @@ if (!isset($_SESSION['token'])) {
     $token_part1 = strtolower(dechex($timestamp) . bin2hex(random_bytes(8)));
     $token = strtolower(substr($token_part1 . hash('sha256', getenv('XMLINT_SANDBOX_SEED') . $token_part1), 0, 32));
     $_SESSION['token'] = $token;
-    $_SESSION['timestamp'] = time();
 } else  {
-    if (!isset($_SESSION['timestamp']) || $_SESSION['timestamp'] + 180 * 86400 < time()) {
-        // Regenerate session with new timestamp. One per h6 months
-        $_SESSION['timestamp'] = time();
-        session_regenerate_id(true);
-    }
     $token = $_SESSION['token'];
 }
 
