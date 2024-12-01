@@ -1,4 +1,8 @@
 
+.error {
+    color: red;
+}
+
 .delete-button {
     background-color: red; /* Red background */
     color: white; /* White text for contrast */
@@ -36,6 +40,10 @@
 
 .list-item:first-child {
     border-top: 1px solid #ccc;
+}
+
+.list-item-page {
+    background-color: #f0f0f0;
 }
 
 .thumbnail {

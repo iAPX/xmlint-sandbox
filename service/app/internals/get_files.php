@@ -6,6 +6,7 @@
 
 $working_dir_files = [];
 $working_dir_xml = [];
+$working_dir_pages = [];
 $files_spaces = 0;
 foreach(scandir($full_dir) as $filename) {
     if (substr($filename, 0, 1) === '.') {
@@ -17,5 +18,7 @@ foreach(scandir($full_dir) as $filename) {
     $working_dir_files[$filename] = $filesize;
     if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'xml') {
         $working_dir_xml[$filename] = $filesize;
+    } else {
+        $working_dir_pages[$filename] = $filesize;
     }
 };

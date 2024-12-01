@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Source button logic
     sourceButtons.forEach(button => {
         button.addEventListener('click', () => {
             const url = button.getAttribute('preview');
@@ -87,39 +88,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Delete button logic
+    document.querySelectorAll('.delete-button').forEach(button => {
+        button.addEventListener('click', function () {
+            const listItem = this.closest('.list-item'); // Get the parent item
+            const filename = listItem.getAttribute('data-filename'); // Get the filename
+    
+            // Show a confirmation popup
+            const confirmed = confirm(`Etes-vous sur de vouloir effacer le fichier "${filename}"?`);
+            if (confirmed) {
+                // Create form data
+                const formData = new FormData();
+                formData.append('filename', filename);
+    
+                // Call the REST API to delete the content
+                fetch('/app/delete.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert(`"${filename}" a ete efface.`);
+                            location.reload(); // Refresh the page after successful deletion
+                        } else {
+                            alert(`Erreur dans l'effacement de "${filename}".`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting the content.');
+                    });
+            }
+        });
+    });
 
     // Set initial active tab
     tabs[0].classList.add('active');
     contents[0].style.display = 'block';
 });
-
-/*
-button.addEventListener('click', () => {
-    const url = button.getAttribute('preview');
-    const infos = button.getAttribute('infos');
-    if (url) {
-        // Clear previous content
-        previewContent.innerHTML = '';
-        
-        // Display infos text
-        const previewInfo = document.getElementById('preview-info');
-        previewInfo.textContent = infos; // Update the text at the top of the "preview" div
-        
-        // Create and add iframe
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        iframe.width = '100%';
-        iframe.style.border = '1px solid #ccc';
-        iframe.style.height = '1200px'; // Use a tall fixed height for iframe
-        iframe.style.display = 'block'; // Ensures no scrollbars on the iframe
-        previewContent.appendChild(iframe);
-
-        // Switch to Preview tab
-        tabs.forEach(t => t.classList.remove('active'));
-        contents.forEach(content => content.style.display = 'none');
-        
-        document.querySelector('.tab-button[data-tab="preview"]').classList.add('active');
-        previewTab.style.display = 'block';
-    }
-});
-*/

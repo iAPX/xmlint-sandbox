@@ -92,7 +92,6 @@ function thumb(string $videotex) {
                 $double_hauteur = false;
                 $inversion = false;
                 $mode_alphamosaique = false;
-                // $last_car = ' ';
 
                 // Si positionnement, effectue-le!
                 if ($car === 0x1F) {
@@ -133,7 +132,7 @@ function thumb(string $videotex) {
             case 0x19:
                 // Accentué, on jette!
                 $videotex = substr($videotex, 1);
-                break;                
+                break;
             case 0x1B:
                 // Échappements!
                 $car2 = ord($videotex);
