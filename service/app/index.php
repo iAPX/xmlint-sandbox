@@ -39,106 +39,160 @@ foreach ($working_dir_files as $filename => $filesize) {
 }
 
 ?>
-<html>
+<!DOCTYPE html>
+<html lang="fr">
     <head>
         <title>XMLint sandbox - <?= $working_dir ?></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                font-family: Arial;
+            }
+        </style>
+        <link rel="stylesheet" href="/app/css/main.css">
+        <link rel="stylesheet" href="/app/css/tabs.css">
+        <link rel="stylesheet" href="/app/css/project.css">
+        <link rel="stylesheet" href="/app/css/preview.css">
     </head>
     <body>
-        <h1>XMLint sandbox - <?= $working_dir ?></h1>
+        <h3>XMLint sandbox - <?= $working_dir ?></h3>
 
-        <!-- Token informations -->
-        <div id="token">
-            <div id="token-summary">
-                <p>
-                    Token : <?= $token ?><br/>
-                    Ça peut vous permettre de retourner sur ce projet en cas de changement de navigateur ou d'appareil.
-                </p>
-            </div>        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button" data-tab="project">Projet</button>
+            <button class="tab-button" data-tab="preview">Previsualiser</button>
+            <button class="tab-button" data-tab="edit">Editer</button>
         </div>
 
         <!-- Lists the files in the working directory -->
-        <div id="files">
+        <div id="project" class="tab-content">
+            <!-- Token informations -->
+            <div id="token">
+                <div id="token-summary">
+                    <p>
+                        Token : <?= $token ?><br/>
+                        Ça peut vous permettre de retourner sur ce projet en cas de changement de navigateur ou d'appareil.
+                    </p>
+                </div>        
+            </div>
+
+            <div id="demo-summary">
+                <p>
+                <?= count($working_dir_xml) ?> Service(s) Minitel.
+                </p>
+            </div>
+
+            <!-- Files list -->
             <div id="file-summary">
                 <p>
                     <?= count($working_dir_files) ?> Fichiers, <?= round($files_spaces / 1000.0, 1) ?> Ko.
                 </p>
             </div>
-            <div id="file-list">
+            <div id="file-list" class="list-container">
                 <?php foreach($working_dir_files as $filename => $filesize): ?>
-                    <p>
+                    <div class="list-item">
                         <?php if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'xml'): ?>
-                            <img src="https://xs.pvigier.com/xml.png" width="160" height="125" />
-                            <?= $filename . ' (' . $filesize . ' octets)' ?>
+                            <img src="https://xs.pvigier.com/xml.png" width="160" height="125" class="thumbnail" />
                         <?php else: ?>
-                            <img src="https://xs.pvigier.com/<?= $working_dir ?>/.<?= $filename ?>.png" width="160" height="125" />
-                            <?= $filename . ' (' . $filesize . ' octets / ' . round($filesize / 120.0, 1) . ' secondes)' ?>
+                            <img src="https://xs.pvigier.com/<?= $working_dir ?>/.<?= $filename ?>.png" width="160" height="125" class="thumbnail" />
                         <?php endif; ?>
+                        <div class="list-item-details">
+                            <div class="list-item-filename"><?= $filename ?></div>
+                            <div class="list-item-filesize"><?= $filesize . ' octets' ?></div>
+                            <div class="list-item-actions">
+                                <?php if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) !== 'xml'): ?>
+                                    <!-- Preview button for Pages -->
+                                    <button 
+                                        class="preview-button"
+                                        infos="Page Minitel <?= $filename ?>"
+                                        preview="https://www.minipavi.fr/emulminitel/index.php?url=<?= urlencode(getenv('XMLINT_SERVE_URL') . $working_dir . '/' . $filename . '.visu') ?>"
+                                    >
+                                        Prévisualiser la page
+                                    </button>
+                                <?php else: ?>
+                                    <!-- Preview button for XML Services -->
+                                    <button 
+                                        class="preview-button"
+                                        infos="Service Minitel du fichier XML <?= $filename ?>"
+                                        preview="https://www.minipavi.fr/emulminitel/index.php?url=<?= urlencode(getenv('XMLINT_SERVE_URL') . $working_dir . '/' . $filename) ?>"
+                                    >
+                                        Previsualisez ce service Minitel grace a MiniPavi.fr
+                                    </button>
 
-                        <form action="/app/delete.php" method="post">
-                            <input type="hidden" name="filename" value="<?= $filename ?>" />
-                            <input type="submit" name="delete" value="Effacer <?= $filename ?>" />
-                        </form>
-                        <?php if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) !== 'xml'): ?>
-                            <a href="https://www.minipavi.fr/emulminitel/index.php?url=<?= urlencode(getenv('XMLINT_SERVE_URL') . $working_dir . '/' . $filename . '.visu') ?>" target="_blank">
-                                Afficher la page
-                            </a>
-                        <?php endif; ?>
-                    </p>
+                                    <!-- Affichage du source XMl -->
+                                    <form action="<?= getenv('XMLINT_SERVE_URL') . $working_dir . '/' . $filename ?>" method="GET" target="_blank">
+                                        <input type="submit" class="source-button" name="source" value="Afficher le source du XML" />
+                                    </form>
+                                <?php endif; ?>
+
+                                <!-- delete action -->
+                                <form action="/app/delete.php" method="post">
+                                    <input type="hidden" name="filename" value="<?= $filename ?>" />
+                                    <input type="submit" class="delete-button" name="delete" value="Effacer <?= $filename ?>" />
+                                </form>
+                            </div>
+                        </div>
+                        
+                    </div>
                 <?php endforeach; ?>
             </div>
-        </div>
 
-        <!-- uplopad form to add a file -->
-        <div id="upload">
-            <div id="upload-summary">
-            <p>
-                Téléversez un fichier local vers votre Sandbox XMLint.<br/>
-            </p>
-                </div>
-            <div id="upload-form">
-                <form action="/app/upload.php" method="POST" enctype="multipart/form-data">
-                    <input type="file" id="myFile" name="upfile">
-                    <input type="submit">
-                </form>
-            </div>
-        </div>
-
-
-        <!-- links to Démo(s) -->
-        <div id="demos">
-            <div id="demo-summary">
-                <p>
-                <?= count($working_dir_xml) ?> Fichiers XML.
-                </p>
-            </div>
-            <div id="demo-list">
-                <p><a href="https://www.minipavi.fr/emulminitel/index.php?url=https://xs.pvigier.com/exemple/xml.xml" target="_blank">Fake Démo XML @todo remove</a></p>
-                <br/><br/>
+            <!-- les services minitel -->
+            <div id="demo-list" class="list-container">
                 <?php foreach($working_dir_xml as $filename => $filesize): ?>
                     <p>
-                        <a href="https://www.minipavi.fr/emulminitel/index.php?url=<?= urlencode(getenv('XMLINT_SERVE_URL') . $working_dir . '/' . $filename) ?>" target="_blank">
-                            <?= $filename . ' (' . $filesize . ' bytes)' ?>
-                        </a>
-                        <br/>
-                        <a href="https://www.minipavi.fr/emulminitel/index.php?url=<?= urlencode(getenv('XMLINT_SERVE_URL') . $working_dir . '/' . $filename) ?>" target="_blank">
-                            Afficher votre service Minitel sur minipavi.fr
-                        </a>
-                        <br/>
-                        <a href="<?= getenv('XMLINT_SERVE_URL') . $working_dir . '/' . $filename ?>" target="_blank">Afficher le fichier XML</a>
+                        <button 
+                                class="preview-button"
+                                infos="Service Minitel du fichier XML <?= $filename ?>"
+                                preview="https://www.minipavi.fr/emulminitel/index.php?url=<?= urlencode(getenv('XMLINT_SERVE_URL') . $working_dir . '/' . $filename) ?>"
+                        >
+                            Afficher votre service <?= $filename ?>
+                        </button>
                     </p>
                 <?php endforeach; ?>
             </div>
+
+            <!-- Download your project as a ZIP file -->
+            <div id="zip">
+                <div id="zip-download">
+                <p>
+                    <form action="/app/zip.php" method="post">
+                        <input type="submit" name="zip" value="Exportez votre projet en .ZIP" />
+                    </form>
+                </p>
+                </div>
+            </div>
         </div>
 
-
-        <!-- Download your project as a ZIP file -->
-        <div id="zip">
-            <div id="zip-download">
-            <p>
-                <form action="/app/zip.php" method="post">
-                    <input type="submit" name="zip" value="Sauvez votre projet en .ZIP" />
-                </form>
-            </p>
+        <div id="edit" class="tab-content" style="display: none;">
+            <!-- uplopad form to add a file -->
+            <div id="edit-upload">
+                <div id="upload-summary">
+                <p>
+                    Téléversez un fichier local vers votre Sandbox XMLint.<br/>
+                </p>
+                    </div>
+                <div id="upload-form">
+                    <form action="/app/upload.php" method="POST" enctype="multipart/form-data">
+                        <input type="file" id="myFile" name="upfile">
+                        <input type="submit">
+                    </form>
+                </div>
+            </div>
+            <div id="edit-xml">
+                Edit XML here (later on)
+            </div>
         </div>
+
+        <!-- Displays -->
+        <div id="preview" class="tab-content" style="display: none;">
+            <p id="preview-info">Rien à afficher pour l'instant.</p>
+            <div id="preview-content">
+                &nbsp;
+            </div>
+        </div>
+
+        <!-- Script for the tabs -->
+        <script src="/app/js/tabs.js"></script>
     </body>
 </html>

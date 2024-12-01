@@ -70,10 +70,6 @@ function thumb(string $videotex) {
                 $ligne--;
                 reposition($ligne, $colonne);
                 break;
-            case 0x19:
-                // Accentué, on jette!
-                $videotex = substr($videotex, 1);
-                break;
             case 0x0C:
                 // Clear screen
                 imagefill($image, 0, 0, $palette[0]);
@@ -126,13 +122,18 @@ function thumb(string $videotex) {
             case 0x12:
                 // répétition du dernier caractère affichable!
                 $repetition = ord($videotex) & 63;
-                $videotex = str_repeat($last_car, $repetition) . substr($videotex, 1);
+                $videotex = str_repeat(chr($last_car), $repetition) . substr($videotex, 1);
                 break;
             case 0x18:
                 // Efface fin de ligne, simulé (!!!)
                 for ($x = $colonne; $x <= 40; $x++) {
                     thumb_draw_alphamosaic($image, $palette, $ligne, $x, $couleur_texte, $couleur_fond, 32);
                 }
+                break;
+            case 0x19:
+                // Accentué, on jette!
+                $videotex = substr($videotex, 1);
+                break;                
             case 0x1B:
                 // Échappements!
                 $car2 = ord($videotex);
@@ -142,8 +143,8 @@ function thumb(string $videotex) {
                  } elseif ($car2 >=0x50 && $car2 <= 0x57) {
                      $couleur_fond = $car2 & 7;
                  } elseif ($car2 >= 0x4C && $car2 <= 0x4F) {
-                     $double_largeur = ($car2 & 2) == 2;
-                     $double_hauteur = ($car2 & 1) == 1;
+                    $double_hauteur = ($car2 & 1) == 1;
+                    $double_largeur = ($car2 & 2) == 2;
                  } elseif ($car2 === 0x5C) {
                      $inversion = false;
                  } elseif ($car2 === 0x5D) {
@@ -174,13 +175,24 @@ function thumb(string $videotex) {
 }
 
 function thumb_draw_alphamosaic($image, array $palette, int $ligne, int $colonne, int $couleur_texte, int $couleur_fond, int $car) {
+    // Fond
+    $px = ($colonne-1) * 8;
+    $py = $ligne * 10;
+    imagefilledrectangle($image, $px, $py, $px + 7, $py + 9, $palette[$couleur_fond]);
+
     // Trace le caractère alphamosaïque
+    $depy = [0, 3, 7];
+    $height = [2, 3, 2];
     $mask = $car - 32;
-    for ($dy = 0; $dy < 10; $dy+= 3) {
+    for ($deply = 0; $deply < 3; $deply++) {
+        $dy = $depy[$deply];
+        $sy = $height[$deply];
         for ($dx = 0; $dx < 8; $dx+= 4) {
             $px = ($colonne-1) * 8 + $dx;
             $py = $ligne * 10 + $dy;
-            imagefilledrectangle($image, $px, $py, $px + 3 , $py + 2, $palette[$mask & 1 ? $couleur_texte : $couleur_fond]);
+            if ($mask & 1) {
+                imagefilledrectangle($image, $px, $py, $px + 3 , $py + $sy, $palette[$mask & 1 ? $couleur_texte : $couleur_fond]);
+            }
             $mask >>= 1;
         }
     }

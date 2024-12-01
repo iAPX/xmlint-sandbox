@@ -1,0 +1,10 @@
+#preview {
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column; /* Allows the content to grow properly */
+}
+
+#preview-content {
+    flex-grow: 1; /* Makes this div take the remaining space */
+    overflow: auto; /* Optional: adds scrollbars if content overflows */
+}

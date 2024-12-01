@@ -1,0 +1,78 @@
+
+.delete-button {
+    background-color: red; /* Red background */
+    color: white; /* White text for contrast */
+}
+
+.delete-button:hover {
+    background-color: darkred; /* Darker red on hover */
+}
+
+
+.preview-button {
+    background-color: blue; /* Red background */
+    color: white; /* White text for contrast */
+}
+
+.preview-button:hover {
+    background-color: darkblue; /* Darker red on hover */
+}
+
+
+/* List container */
+.list-container {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.list-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.list-item:first-child {
+    border-top: 1px solid #ccc;
+}
+
+.thumbnail {
+    width: 160px; /* Thumbnail width */
+    height: 125px; /* Thumbnail height */
+    object-fit: cover; /* Ensures the thumbnail is scaled properly */
+    margin-right: 15px; /* Spacing between thumbnail and details */
+    border-radius: 5px; /* Optional: rounded corners */
+}
+
+.list-item-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.list-item-filename {
+    font-size: 24px; /* Bigger font for filename */
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.list-item-filesize {
+    font-size: 18px;
+    color: #555; /* Subtle color for filesize information */
+    margin-bottom: 10px;
+}
+
+.list-item-actions {
+    display: flex;
+    gap: 10px; /* Spacing between buttons */
+}
+
+button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
