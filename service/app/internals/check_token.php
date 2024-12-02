@@ -51,4 +51,4 @@ if (!file_exists($full_dir) || !is_dir($full_dir)) {
 }
 
 // Refresh token Cookie
-setcookie("token", $token, time() + (365 * 24 * 60 * 60));
+setcookie("token", $token, time() + (365 * 24 * 60 * 60), "/");

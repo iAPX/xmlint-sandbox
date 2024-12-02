@@ -13,7 +13,7 @@ $token_part1 = strtolower(dechex($timestamp) . bin2hex(random_bytes(8)));
 $token = strtolower(substr($token_part1 . hash('sha256', getenv('XMLINT_SANDBOX_SEED') . $token_part1), 0, 32));
 
 // Create token and set
-setcookie("token", $token, time() + (365 * 24 * 60 * 60));
+setcookie("token", $token, time() + (365 * 24 * 60 * 60), "/");
 
 // Create the directory
 $working_dir = substr($token, 0, 8);

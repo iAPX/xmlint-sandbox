@@ -54,7 +54,7 @@ if (!file_exists($full_dir) || !is_dir($full_dir)) {
 }
 
 // Token activation
-setcookie("token", $token, time() + (365 * 24 * 60 * 60));
+setcookie("token", $token, time() + (365 * 24 * 60 * 60), "/");
 
 // Redirect to /app/index.php
 header('Location: /app/');
