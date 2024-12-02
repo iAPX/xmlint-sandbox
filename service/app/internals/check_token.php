@@ -1,51 +1,48 @@
 <?php
 
 /**
- * Get a POSTed or GETed token, check it, check the project's directory
+ * Checks the token, display an error page if absent.
  * 
- * Expect $_POST['token'] ou $_GET['token']
+ * Refresh the token.
+ * Create $working_dir and $full_dir and check if the directory exists
  */
 
-$access_token = $_POST['token'] ?? $_GET['token'] ?? '';
-
-// Token absent
-if ($access_token === '') {
+// Is token is not present
+if (!isset($_COOKIE['token'])) {
     ?>
     <html>
         <body>
             <h1>Token absent.</h1><br/>
-            <a href="/">Retour a l'accueil</a>
+            <a href="/">Retour a l'accueil</a><br/>
         </body>
     </html>
     <?php
     exit(0);
 }
 
-// Token check
-$token_part1 = substr($access_token, 0, 24);
+// If token is not correct
+$token_part1 = substr($_COOKIE['token'], 0, 24);
 $token = strtolower(substr($token_part1 . hash('sha256', getenv('XMLINT_SANDBOX_SEED') . $token_part1), 0, 32));
-
-// Not a token
-if ($token !== $access_token) {
+if ($token !== $_COOKIE['token']) {
     ?>
     <html>
         <body>
-            <h1>Token invalide.</h1><br/>
-            <a href="/">Retour a l'accueil</a>
+            <h1>Token hash invalide.</h1><br/>
+            <a href="/">Retour a l'accueil</a><br/>
         </body>
     </html>
     <?php
     exit(0);
 }
 
-// Not a directory
+// If working dir doesn't exist
 $working_dir = substr($token, 0, 8);
 $full_dir = getenv('XMLINT_SANDBOX_DIR') . '/' . $working_dir;
 if (!file_exists($full_dir) || !is_dir($full_dir)) {
     ?>
     <html>
         <body>
-            <h1>Token valide, mais ce projet n'est plus disponible.</h1><br/>
+            <h1>Ce projet n'est plus disponible.</h1><br/>
             <a href="/">Retour a l'accueil</a>
         </body>
     </html>
@@ -53,9 +50,5 @@ if (!file_exists($full_dir) || !is_dir($full_dir)) {
     exit(0);
 }
 
-// Token activation
+// Refresh token Cookie
 setcookie("token", $token, time() + (365 * 24 * 60 * 60));
-
-// Redirect to /app/index.php
-header('Location: /app/');
-

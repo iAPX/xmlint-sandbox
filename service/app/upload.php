@@ -8,6 +8,7 @@
  * - vérification nb fichiers (si pas déjà présent)
  */
 
+require_once "internals/check_token.php";
 require_once "internals/bootstrap.php";
 require_once "internals/get_files.php";
 require_once "internals/check_filename.php";

@@ -14,6 +14,7 @@
 $links = ['Démo' => 'https://www.minipavi.fr/emulminitel/index.php?url=https://xs.pvigier.com/exemple/xml.xml'];
 $test_token = "";
 
+require_once 'internals/check_token.php';
 require_once 'internals/bootstrap.php';
 require_once 'internals/get_files.php';
 require_once 'internals/thumb.php';

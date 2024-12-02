@@ -4,6 +4,7 @@
  * Delete a file by it's filename
  */
 
+require_once('internals/check_token.php');
 require_once 'internals/bootstrap.php';
 require_once 'internals/check_filename.php';
 

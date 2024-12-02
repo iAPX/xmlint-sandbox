@@ -4,6 +4,7 @@
  * Download your projet as a zip file, named after the project directory and the current date.
  */
 
+require_once 'internals/check_token.php';
 require_once 'internals/bootstrap.php';
 require_once 'internals/get_files.php';
 
@@ -25,8 +26,7 @@ try {
 
     foreach ($working_dir_files as $filename => $filesize) {
         $full_filename = $full_dir . '/' . $filename;
-        //// $file = new SplFileInfo($full_filename);
-        $zip->addFile($full_filename, 'xmlint-sandbox-' . date('Y-m-d') . '/'. $working_dir . '/' . $filename);
+        $zip->addFile($full_filename, $working_dir . '/' . $filename);
     }
 
     // Close the ZIP archive
