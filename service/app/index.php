@@ -228,9 +228,57 @@ $working_dir_sorted = array_merge($working_dir_xml, $working_dir_pages);
 
         <!-- Documentation -->
         <div id="doc" class="tab-content" style="display: none;">
-            <p id="doc-info">Rien à afficher pour l'instant.</p>
-            <div id="doc-content">
-                &nbsp;
+            <p id="doc-info">Documentation succinte</p>
+            <div id="doc-content" class="container">
+
+                <div id="container-about">
+                    <p>
+                        XMLint Sandbox est un <em>prototype</em> de site Web permettant a tout-un-chacun de creer un service Minitel pour XMLint et MiniPavi.<br/>
+                        Vous n'avez pas besoin de serveur, d'ouvrir des ports à Internet sur votre routeur ou de quoi que ce soit de technique.<br/>
+                        XMLint Sandbox est gratuit. Mais c'est un prototype. Les donnees peuvent etre effacees volontairement ou perdues a tout moment. Le service s'arrêter<br/>
+                        Pensez a sauvegarder votre travail via l'option de telechargement au format ZIP.
+                    </p>
+                    <p>
+                        Vous pouvez créer des pages Minitel avec <a href="https://minitel.cquest.org/">MiEdit</a>.<br/>
+                        Vous pouvez modifier le fichier XML de votre service Minitel simplement en le téléchargeant, en l'éditant localement et en le téléversant depuis l'App Web.<br/>
+                        La <a href="https://raw.githubusercontent.com/ludosevilla/minipaviCli/master/XMLint/XMLint-doc.pdf">documentation de XMLint est disponible en PDF ici</a>.<br/>
+                        <a href="https://minipavi.fr">Minipavi.fr</a> est un excellent point de départ global, intégrant XMLint (XML), MiniPavi et MiniPaviCli (PHP), en vous offrant de multiples possibilites.<br/>
+                        J'ai aussi realise MiniPaviFwk, micro-framework PHP de programmation de services Minitel en liaison avec MiniPaviCli et MiniPavi.<br/>
+                        <br/>
+                        Pour finir, je recommande de télécharger <a href="https://www.minipavi.fr/stum1b.pdf">les STUM1b en PDF</a>, ainsi que <a href="https://www.minipavi.fr/videotex-codes.pdf">ce resume PDF des codes Videotex du Minitel<a/>.
+                    </p>
+                </div>
+
+                <div id="container-sources">
+                    <p>
+                        Les sources de ce prototype sont disponibles sur <a href="https://github.com/iAPX/xmlint-sandbox">https://github.com/iAPX/xmlint-sandbox</a>.
+                    </p>
+                    <p>
+                        Sources externes:<br/>
+                        Les sources de MiEdit sont disponibles sur <a href="https://github.com/Zigazou/miedit">https://github.com/Zigazou/miedit</a>.<br/>
+                        Les sources de MiniPavi sont disponibles sur <a href="https://github.com/ludosevilla/minipavi">https://github.com/ludosevilla/minipavi</a>.<br/>
+                        Les sources de MiniPaviCli sont disponibles sur <a href="https://github.com/ludosevilla/minipaviCli">https://github.com/ludosevilla/minipaviCli</a>.<br/>
+                        Les sources de XMLint sont disponibles sur <a href="https://github.com/ludosevilla/xmlint">https://github.com/ludosevilla/xmlint</a>.<br/>
+                        Les sources de MiniPaviFwk sont disponibles sur <a href="https://github.com/iAPX/minipavifwk">https://github.com/iapx/minipavifwk</a>.
+                    </p>
+                </div>
+
+                <div id="container-gdpr">
+                    <p>Cote GDPR/RGPD et protection des donnees et de la vie privee:</p>
+                    <p>Les fichiers sont stockes au Canada, hors UE. N'utilisez pas ce prototype si vos données sont sensibles ou nécessitent de rester en UE.</p>
+                    <p>Les donnees restent sous notre controle complet, a l'exception de leur acces en HTTP, elles sont donc considerees comme public et non confidentielles.</p>
+                    <p>Nous ne stockons aucune donnee personnelle, ce prototype a ete concu en ce sens. Ni adresse IP ni email.</p>
+                    <p>Un seul cookie est utilisé: "token" qui stocke votre token courant, il ne comporte aucune PII.</p>
+                </div>
+
+                <div id="container-license">
+                    <p>
+                        Ce prototype est realise sous <a href="https://mit-license.org/">licence MIT</a>. Pas de "Copyright" reclame.<br/>
+                        Vous faites ce que vous voulez. Pas d'autorisation a demander. Pas besoin de me citer. Agissez librement!
+                    </p>
+                </div>
+
+
             </div>
         </div>
 

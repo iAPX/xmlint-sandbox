@@ -84,3 +84,26 @@ button {
     cursor: pointer;
     font-size: 14px;
 }
+
+
+/* Generic container styling */
+.container {
+    display: flex; /* Use flexbox for alignment */
+    flex-direction: column; /* Stack child elements vertically */
+    gap: 15px; /* Add vertical spacing between child divs */
+    padding: 20px; /* Internal padding for the container */
+    border: 1px solid #ccc; /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light background */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+/* Styling for child divs */
+.container > div {
+    padding: 15px; /* Internal padding for child divs */
+    border: 1px solid #ddd; /* Subtle border */
+    border-radius: 4px; /* Rounded corners */
+    background-color: #fff; /* White background */
+    text-align: center; /* Center-align the content */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for child divs */
+}
