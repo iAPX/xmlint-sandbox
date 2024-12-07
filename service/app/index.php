@@ -54,9 +54,12 @@ foreach($working_dir_xml as $filename => $xml_filesize) {
         }
         $pages[$basename] = $url;
     }
+
     // Complete filesize
-    foreach($pages as $filename => $vdt_filesize) {
-        $filesize += $vdt_filesize;
+    foreach($pages as $basename) {
+        if (isset($working_dir_files[$basename])) {
+            $filesize += $working_dir_files[$basename];
+        }
     }
 
     $projects[$filename] = [

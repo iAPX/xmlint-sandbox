@@ -14,6 +14,9 @@ foreach(scandir($full_dir) as $filename) {
         continue;
     }
     $filesize = filesize($full_dir . '/' . $filename);
+    if ($filesize === false) {
+        $filesize = 0;
+    }
     $files_spaces += $filesize;
     $working_dir_files[$filename] = $filesize;
     if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'xml') {
